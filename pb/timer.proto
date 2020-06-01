@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package timer;
+
+service Timer {
+  rpc CreateTimer(CreateTimerRequest) returns (CreateTimerReply) {}
+  rpc DeleteTimer(DeleteTimerRequest) returns (DeleteTimerReply) {}
+}
+
+message CreateTimerRequest {
+  string payload = 1;
+  CallbackAction callback = 2;
+}
+
+message CreateTimerReply {
+  string timerID = 1;
+}
+
+message DeleteTimerRequest {
+  string timerID = 1;
+}
+
+message DeleteTimerReply {
+}
+
+message CallbackAction {
+  string Type = 1;
+  string method = 2;
+  string uri = 3;
+  map<string, string> headers = 4;
+  string payload = 5;
+}
