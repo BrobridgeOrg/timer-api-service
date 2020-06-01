@@ -10,8 +10,15 @@ import (
 )
 
 type CreateTimerRequest struct {
+	Mode     TimerMode      `json:"mode"`
 	Callback CallbackAction `json:"callback"`
 	Payload  string         `json:"payload"`
+}
+
+type TimerMode struct {
+	Mode      string `json:"mode"`
+	Interval  uint32 `json:"interval"`
+	Timestamp uint64 `json:"timestamp"`
 }
 
 type CallbackAction struct {
@@ -34,6 +41,11 @@ func InitTimerAPI(timer *timer.Service, r *gin.Engine) {
 		}
 
 		reply, err := timer.CreateTimer(context.Background(), &pb.CreateTimerRequest{
+			Mode: &pb.TimerMode{
+				Mode:      request.Mode.Mode,
+				Interval:  request.Mode.Interval,
+				Timestamp: request.Mode.Timestamp,
+			},
 			Payload: request.Payload,
 			Callback: &pb.CallbackAction{
 				Type:    request.Callback.Type,

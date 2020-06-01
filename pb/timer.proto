@@ -8,8 +8,9 @@ service Timer {
 }
 
 message CreateTimerRequest {
-  string payload = 1;
-  CallbackAction callback = 2;
+  TimerMode mode = 1;
+  string payload = 2;
+  CallbackAction callback = 3;
 }
 
 message CreateTimerReply {
@@ -29,4 +30,10 @@ message CallbackAction {
   string uri = 3;
   map<string, string> headers = 4;
   string payload = 5;
+}
+
+message TimerMode {
+  string mode = 1;
+  uint32 interval = 2;
+  uint64 timestamp = 3;
 }

@@ -28,6 +28,13 @@ func (service *Service) CreateTimer(ctx context.Context, in *pb.CreateTimerReque
 	// TODO: Create timer
 	timerID := uuid.NewV1().String()
 
+	switch in.Mode.Mode {
+	case "appointment":
+		// in.Mode.Timestamp
+	case "countdown":
+		// in.Mode.Interval
+	}
+
 	log.WithFields(log.Fields{
 		"id": timerID,
 	}).Info("Created timer")
