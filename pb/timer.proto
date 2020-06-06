@@ -37,3 +37,14 @@ message TimerMode {
   uint32 interval = 2;
   uint64 timestamp = 3;
 }
+
+message TimerRequest {
+  string timerID = 1;
+  uint64 timestamp = 2;
+  TimerInfo info = 3;
+}
+
+message TimerInfo {
+  string payload = 1;
+  CallbackAction callback = 2;
+}
