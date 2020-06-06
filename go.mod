@@ -1,4 +1,4 @@
-module timer-api-service
+module github.com/BrobridgeOrg/timer-api-service
 
 go 1.13
 
