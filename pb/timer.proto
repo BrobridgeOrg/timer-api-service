@@ -38,7 +38,7 @@ message TimerMode {
   uint64 timestamp = 3;
 }
 
-message TimerRequest {
+message TimerCreation {
   string timerID = 1;
   uint64 timestamp = 2;
   TimerInfo info = 3;
@@ -47,4 +47,8 @@ message TimerRequest {
 message TimerInfo {
   string payload = 1;
   CallbackAction callback = 2;
+}
+
+message TimerDeletion {
+  string timerID = 1;
 }
