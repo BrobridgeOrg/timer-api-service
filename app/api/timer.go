@@ -3,8 +3,9 @@ package api
 import (
 	"context"
 	"net/http"
-	pb "timer-api-service/pb"
-	"timer-api-service/services/timer"
+
+	pb "github.com/BrobridgeOrg/timer-api-service/pb"
+	"github.com/BrobridgeOrg/timer-api-service/services/timer"
 
 	"github.com/gin-gonic/gin"
 )

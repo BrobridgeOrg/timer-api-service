@@ -5,8 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 
-	app "timer-api-service/app/interface"
-	pb "timer-api-service/pb"
+	app "github.com/BrobridgeOrg/timer-api-service/app/interface"
+	pb "github.com/BrobridgeOrg/timer-api-service/pb"
 )
 
 type Service struct {

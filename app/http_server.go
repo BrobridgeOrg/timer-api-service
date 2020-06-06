@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	"timer-api-service/app/api"
+	"github.com/BrobridgeOrg/timer-api-service/app/api"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
