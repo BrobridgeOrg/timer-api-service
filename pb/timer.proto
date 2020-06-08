@@ -52,3 +52,8 @@ message TimerInfo {
 message TimerDeletion {
   string timerID = 1;
 }
+
+message TimerTriggerInfo {
+  string timerID = 1;
+  TimerInfo info = 2;
+}
