@@ -8,8 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 
-	app "github.com/BrobridgeOrg/timer-api-service/app/interface"
-	pb "github.com/BrobridgeOrg/timer-api-service/pb"
+	app "github.com/BrobridgeOrg/vibration-api-service/app/interface"
+	pb "github.com/BrobridgeOrg/vibration-api-service/pb"
 )
 
 type Service struct {

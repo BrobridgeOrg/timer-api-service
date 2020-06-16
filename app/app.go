@@ -3,8 +3,8 @@ package app
 import (
 	"strconv"
 
-	"github.com/BrobridgeOrg/timer-api-service/app/eventbus"
-	app "github.com/BrobridgeOrg/timer-api-service/app/interface"
+	"github.com/BrobridgeOrg/vibration-api-service/app/eventbus"
+	app "github.com/BrobridgeOrg/vibration-api-service/app/interface"
 	"github.com/nats-io/stan.go"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"

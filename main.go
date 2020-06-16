@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
-	app "github.com/BrobridgeOrg/timer-api-service/app"
+	app "github.com/BrobridgeOrg/vibration-api-service/app"
 )
 
 func init() {

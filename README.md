@@ -1,4 +1,4 @@
-# Timer API Service
+# Vibration API Service
 
 API service expose APIs to control timer mechanism.
 

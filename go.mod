@@ -1,4 +1,4 @@
-module github.com/BrobridgeOrg/timer-api-service
+module github.com/BrobridgeOrg/vibration-api-service
 
 go 1.13
 

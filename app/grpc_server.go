@@ -5,9 +5,9 @@ import (
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
 
-	app "github.com/BrobridgeOrg/timer-api-service/app/interface"
-	pb "github.com/BrobridgeOrg/timer-api-service/pb"
-	timer "github.com/BrobridgeOrg/timer-api-service/services/timer"
+	app "github.com/BrobridgeOrg/vibration-api-service/app/interface"
+	pb "github.com/BrobridgeOrg/vibration-api-service/pb"
+	timer "github.com/BrobridgeOrg/vibration-api-service/services/timer"
 )
 
 type GRPCServer struct {
