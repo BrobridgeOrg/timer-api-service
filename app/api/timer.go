@@ -33,7 +33,7 @@ type CallbackAction struct {
 func InitTimerAPI(timer *timer.Service, r *gin.Engine) {
 
 	// Create timer
-	r.POST("/api/timers", func(c *gin.Context) {
+	r.POST("/api/v1/timers", func(c *gin.Context) {
 
 		var request CreateTimerRequest
 		if err := c.ShouldBindJSON(&request); err != nil {
@@ -72,7 +72,7 @@ func InitTimerAPI(timer *timer.Service, r *gin.Engine) {
 	})
 
 	// Cancel timer
-	r.DELETE("/api/timer/:timerID", func(c *gin.Context) {
+	r.DELETE("/api/v1/timer/:timerID", func(c *gin.Context) {
 
 		in := &pb.DeleteTimerRequest{
 			TimerID: c.Param("timerID"),
