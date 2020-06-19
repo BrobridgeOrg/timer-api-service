@@ -12,7 +12,7 @@ import (
 func init() {
 
 	// From the environment
-	viper.SetEnvPrefix("TIMER_API_SERVICE")
+	viper.SetEnvPrefix("VIBRATION_API_SERVICE")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
