@@ -45,7 +45,7 @@ func (service *Service) CreateTimer(ctx context.Context, in *pb.CreateTimerReque
 		// in.Mode.Timestamp
 		event.Timestamp = in.Mode.Timestamp
 	case "countdown":
-		event.Timestamp = uint64(time.Now().Unix()) + uint64(in.Mode.Interval)
+		event.Timestamp = uint64(time.Now().UTC().Unix()) + uint64(in.Mode.Interval)
 	}
 
 	log.WithFields(log.Fields{
