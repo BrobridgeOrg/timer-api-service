@@ -1,6 +1,8 @@
 package app
 
 import (
+	"net"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
 	"google.golang.org/grpc"
@@ -11,42 +13,53 @@ import (
 )
 
 type GRPCServer struct {
-	Timer *timer.Service
+	server   *grpc.Server
+	listener net.Listener
+	host     string
+	Timer    *timer.Service
 }
 
-func (a *App) InitGRPCServer(host string) error {
-	/*
-		// Start to listen on port
-		lis, err := net.Listen("tcp", host)
-		if err != nil {
-			log.Fatal(err)
-			return err
-		}
-	*/
+func NewGRPCServer(host string) *GRPCServer {
+	return &GRPCServer{
+		server: grpc.NewServer(),
+		host:   host,
+	}
+}
+
+func (gs *GRPCServer) Init(a *App) error {
+
+	// Preparing listener
 	lis := a.connectionListener.MatchWithWriters(
 		cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"),
 	)
 
+	gs.listener = lis
+
 	log.WithFields(log.Fields{
-		"host": host,
-	}).Info("Starting gRPC server on " + host)
+		"host": gs.host,
+	}).Info("Preparing gRPC server")
 
-	// Create gRPC server
-	s := grpc.NewServer()
-
-	// Register data source adapter service
+	// Services
 	timerService := timer.CreateService(app.AppImpl(a))
 	a.grpcServer.Timer = timerService
-	pb.RegisterTimerServer(s, timerService)
-	//reflection.Register(s)
+	pb.RegisterTimerServer(gs.server, timerService)
 
 	log.WithFields(log.Fields{
 		"service": "Timer",
 	}).Info("Registered service")
 
+	return nil
+}
+
+func (gs *GRPCServer) Serve() error {
+
+	log.WithFields(log.Fields{
+		"host": gs.host,
+	}).Info("Starting gRPC server")
+
 	// Starting server
-	if err := s.Serve(lis); err != cmux.ErrListenerClosed {
-		log.Fatal(err)
+	if err := gs.server.Serve(gs.listener); err != cmux.ErrListenerClosed {
+		log.Error(err)
 		return err
 	}
 

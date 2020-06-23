@@ -2,10 +2,11 @@ package app
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/BrobridgeOrg/vibration-api-service/app/eventbus"
 	app "github.com/BrobridgeOrg/vibration-api-service/app/interface"
-	"github.com/nats-io/stan.go"
+	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
 	"github.com/sony/sonyflake"
@@ -18,6 +19,8 @@ type App struct {
 	eventbus           *eventbus.EventBus
 	connectionListener cmux.CMux
 	grpcServer         *GRPCServer
+	httpServer         *HTTPServer
+	isReady            bool
 }
 
 func CreateApp() *App {
@@ -31,19 +34,45 @@ func CreateApp() *App {
 
 	idStr := strconv.FormatUint(id, 16)
 
-	return &App{
+	// exposed port
+	port := strconv.Itoa(viper.GetInt("service.port"))
+
+	a := &App{
 		id:         id,
 		flake:      flake,
-		grpcServer: &GRPCServer{},
-		eventbus: eventbus.CreateEventBus(
-			viper.GetString("service.event_server"),
-			viper.GetString("service.event_cluster_id"),
-			idStr,
-			func(conn stan.Conn, err error) {
-				log.Error("event server was disconnected")
-			},
-		),
+		grpcServer: NewGRPCServer(":" + port),
+		httpServer: NewHTTPServer(":" + port),
+		isReady:    false,
 	}
+
+	a.eventbus = eventbus.CreateEventBus(
+		viper.GetString("service.event_server"),
+		viper.GetString("service.event_cluster_id"),
+		idStr,
+		func(natsConn *nats.Conn) {
+
+			for {
+				log.Warn("re-connect to event server")
+
+				// Connect to NATS Streaming
+				err := a.eventbus.Connect()
+				if err != nil {
+					log.Error("Failed to connect to event server")
+					time.Sleep(time.Duration(1) * time.Second)
+					continue
+				}
+
+				a.isReady = true
+
+				break
+			}
+		},
+		func(natsConn *nats.Conn) {
+			a.isReady = false
+		},
+	)
+
+	return a
 }
 
 func (a *App) Init() error {
@@ -52,8 +81,27 @@ func (a *App) Init() error {
 		"a_id": a.id,
 	}).Info("Starting application")
 
+	// Initializing connection listener
+	port := strconv.Itoa(viper.GetInt("service.port"))
+	err := a.CreateConnectionListener(":" + port)
+	if err != nil {
+		return err
+	}
+
 	// Connect to event server
-	err := a.eventbus.Connect()
+	err = a.eventbus.Connect()
+	if err != nil {
+		return err
+	}
+
+	// Initialize GRPC server
+	err = a.grpcServer.Init(a)
+	if err != nil {
+		return err
+	}
+
+	// Initialize HTTP server
+	err = a.httpServer.Init(a)
 	if err != nil {
 		return err
 	}
@@ -66,29 +114,23 @@ func (a *App) Uninit() {
 
 func (a *App) Run() error {
 
-	port := strconv.Itoa(viper.GetInt("service.port"))
-	err := a.CreateConnectionListener(":" + port)
-	if err != nil {
-		return err
-	}
+	// gRPC
+	go func() {
+		err := a.grpcServer.Serve()
+		if err != nil {
+			log.Error(err)
+		}
+	}()
 
 	// HTTP
 	go func() {
-		err := a.InitHTTPServer(":" + port)
+		err := a.httpServer.Serve()
 		if err != nil {
 			log.Error(err)
 		}
 	}()
 
-	// gRPC
-	go func() {
-		err := a.InitGRPCServer(":" + port)
-		if err != nil {
-			log.Error(err)
-		}
-	}()
-
-	err = a.Serve()
+	err := a.Serve()
 	if err != nil {
 		return err
 	}

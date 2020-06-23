@@ -1,6 +1,7 @@
 package app
 
 import (
+	"net"
 	"net/http"
 
 	"github.com/BrobridgeOrg/vibration-api-service/app/api"
@@ -10,27 +11,44 @@ import (
 	"github.com/soheilhy/cmux"
 )
 
-func (a *App) InitHTTPServer(host string) error {
+type HTTPServer struct {
+	server   *http.Server
+	listener net.Listener
+	host     string
+}
 
+func NewHTTPServer(host string) *HTTPServer {
+	return &HTTPServer{
+		server: &http.Server{},
+		host:   host,
+	}
+}
+
+func (hs *HTTPServer) Init(a *App) error {
+
+	// Preparing listener
 	lis := a.connectionListener.Match(cmux.HTTP1Fast())
-
-	//	gin.SetMode(gin.ReleaseMode)
+	hs.listener = lis
 
 	r := gin.Default()
 
+	// APIs
 	api.InitTimerAPI(a.grpcServer.Timer, r)
 
-	s := &http.Server{
-		Handler: r,
-	}
+	hs.server.Handler = r
+
+	return nil
+}
+
+func (hs *HTTPServer) Serve() error {
 
 	log.WithFields(log.Fields{
-		"host": host,
-	}).Info("Starting HTTP server on " + host)
+		"host": hs.host,
+	}).Info("Starting HTTP server")
 
 	// Starting server
-	if err := s.Serve(lis); err != cmux.ErrListenerClosed {
-		log.Fatal(err)
+	if err := hs.server.Serve(hs.listener); err != cmux.ErrListenerClosed {
+		log.Error(err)
 		return err
 	}
 
