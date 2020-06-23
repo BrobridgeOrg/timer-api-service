@@ -72,7 +72,7 @@ func InitTimerAPI(timer *timer.Service, r *gin.Engine) {
 	})
 
 	// Cancel timer
-	r.DELETE("/api/v1/timer/:timerID", func(c *gin.Context) {
+	r.DELETE("/api/v1/timers/:timerID", func(c *gin.Context) {
 
 		in := &pb.DeleteTimerRequest{
 			TimerID: c.Param("timerID"),
